@@ -1,8 +1,25 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled, { keyframes, css } from 'styled-components'
 import { useAuth } from '../../context/AuthContext'
+import { calculateDaysLeft } from '../../utils/calcDaysLeft'
 
-const StyledCard = styled.div`
+const shakeAnimation = keyframes`
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-10px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(10px);
+  }
+`
+
+const shakeStyles = css`
+  animation: ${shakeAnimation} 0.8s ease-in-out;
+`
+
+const StyledCard = styled.div<{ isDueDateNegative?: boolean }>`
   perspective: 1000px;
   width: 400px;
   height: 280px;
@@ -45,8 +62,9 @@ const StyledCard = styled.div`
   .back {
     transform: rotateY(180deg);
     background: linear-gradient(135deg, #53223f, #bd6772);
+    ${(props) => props.isDueDateNegative && shakeStyles};
+    border: ${(props) => (props.isDueDateNegative ? '2px solid red' : 'none')};
   }
-
   .chip {
     position: absolute;
     width: 60px;
@@ -168,18 +186,11 @@ const Card: React.FC<CardProps> = ({
 }) => {
   const { user } = useAuth()
 
-  const calculateDaysLeft = (dueDate: string): number => {
-    const currentDate = new Date()
-    const dueDateTime = new Date(dueDate)
-    const timeDifference = dueDateTime.getTime() - currentDate.getTime()
-    const daysLeft = Math.ceil(timeDifference / (1000 * 60 * 60 * 24))
-    return daysLeft > 0 ? daysLeft : 0
-  }
-
   const daysLeft = calculateDaysLeft(dueDate)
+  const isDueDateNegative = daysLeft <= 0
 
   return (
-    <StyledCard>
+    <StyledCard isDueDateNegative={isDueDateNegative}>
       <div className="flip">
         <div className="front">
           <div className="chip"></div>
@@ -194,7 +205,17 @@ const Card: React.FC<CardProps> = ({
           <div className="ccv">
             <label>CCV</label>
           </div>
-          <div className="days-left">{daysLeft} days left</div>
+          <div className="days-left">
+            {isDueDateNegative ? (
+              <>
+                Card Expired!
+                <br />
+                Please make a payment.
+              </>
+            ) : (
+              `${daysLeft} days left`
+            )}
+          </div>
         </div>
       </div>
     </StyledCard>

@@ -1,9 +1,10 @@
+// Inbox.tsx
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import styled from 'styled-components'
 import { useAuth } from '../../context/AuthContext'
 import { decodeBase64 } from '../../utils/decode'
 import Card from '../CreditCard/Card'
+import { get } from '../../services/api'
 
 interface UserProfile {
   picture: string
@@ -70,8 +71,8 @@ const Inbox: React.FC<InboxProps> = ({ user }) => {
 
   const fetchInboxEmails = async () => {
     try {
-      const response = await axios.get(
-        `https://www.googleapis.com/gmail/v1/users/me/messages?labelIds=INBOX`,
+      const response: { messages: any[] } = await get(
+        `users/me/messages?labelIds=INBOX`,
         {
           headers: {
             Authorization: `Bearer ${user?.access_token}`,
@@ -80,7 +81,7 @@ const Inbox: React.FC<InboxProps> = ({ user }) => {
         },
       )
 
-      const emails: Email[] = response.data.messages.map((message: any) => {
+      const emails: Email[] = response.messages.map((message: any) => {
         return {
           id: message.id,
           subject: '',
@@ -90,23 +91,21 @@ const Inbox: React.FC<InboxProps> = ({ user }) => {
 
       const emailsWithDetails = await Promise.all(
         emails.map(async (email) => {
-          const messageDetails = await axios.get(
-            `https://www.googleapis.com/gmail/v1/users/me/messages/${email.id}`,
-            {
-              headers: {
-                Authorization: `Bearer ${user?.access_token}`,
-                Accept: 'application/json',
-              },
+          const messageDetails: {
+            payload: { headers: any[]; parts: { body: { data: string } }[] }
+          } = await get(`users/me/messages/${email.id}`, {
+            headers: {
+              Authorization: `Bearer ${user?.access_token}`,
+              Accept: 'application/json',
             },
-          )
+          })
 
-          const subjectHeader = messageDetails.data.payload.headers.find(
+          const subjectHeader = messageDetails.payload.headers.find(
             (header: any) => header.name === 'Subject',
           )
 
-          // Decoding the base64 encoded body
           const body = decodeBase64(
-            messageDetails.data.payload.parts[0]?.body.data || '',
+            messageDetails.payload.parts[0]?.body.data || '',
           )
 
           email.subject = subjectHeader ? subjectHeader.value : 'N/A'
@@ -116,7 +115,6 @@ const Inbox: React.FC<InboxProps> = ({ user }) => {
         }),
       )
 
-      // Filter emails with "Credit Card" in the subject
       const filteredEmails = emailsWithDetails.filter((email) =>
         email.subject.toLowerCase().includes('credit card'),
       )
@@ -128,7 +126,6 @@ const Inbox: React.FC<InboxProps> = ({ user }) => {
   }
 
   const extractCardInfo = (body: string): CardInfo | null => {
-    // Regular expressions for card details
     const cardNameRegex = /Card\s*Name:\s*([\s\S]+?)(?=Card\s*Number:)/i
     const cardNumberRegex = /Card\s*Number:\s*(\*{4} \*{4} \*{4} \d{4})/i
     const billingCycleRegex =
@@ -138,13 +135,11 @@ const Inbox: React.FC<InboxProps> = ({ user }) => {
     const totalAmountDueRegex = /Total\s*Amount\s*Due:\s*\$([\d.]+)/i
     const bankNameRegex = /\b([A-Z]{3,})\s*Bank\b/
 
-    // Helper function to perform regex matching with exec
     const execRegex = (regex: RegExp, text: string) => {
       const match = regex.exec(text)
       return match ? match[1] : null
     }
 
-    // Match card details using exec
     const cardName = execRegex(cardNameRegex, body)
     const cardNumber = execRegex(cardNumberRegex, body)
     const billingCycle = execRegex(billingCycleRegex, body)
@@ -164,13 +159,11 @@ const Inbox: React.FC<InboxProps> = ({ user }) => {
       const billingDateParts = billingDate.split(' ')
       const billingDay = parseInt(billingDateParts[1], 10)
 
-      // Assuming billingCycleStart and billingCycleEnd are day numbers (e.g., 1-15)
       const dueDay =
         billingDay <= parseInt(billingCycleStart, 10)
           ? parseInt(billingCycleStart, 10)
           : parseInt(billingCycleEnd, 10)
 
-      // Assuming the billing month is the current month
       const dueDate = new Date()
       dueDate.setDate(dueDay)
 
@@ -179,7 +172,7 @@ const Inbox: React.FC<InboxProps> = ({ user }) => {
         cardNumber: cardNumber.trim(),
         bankName: bankNameMatch.trim(),
         amountDue: parseFloat(totalAmountDue),
-        dueDate: dueDate.toDateString(), // Update with the actual due date
+        dueDate: dueDate.toDateString(),
         billingCycle: billingCycle.trim(),
         billingDate: billingDate.trim(),
         totalAmountDue: totalAmountDue.trim(),
@@ -201,7 +194,6 @@ const Inbox: React.FC<InboxProps> = ({ user }) => {
                 return (
                   <StyledEmailItem key={email.id}>
                     <StyledSubject>{cardInfo.cardName}</StyledSubject>
-                    {/* Display the Card component with cardInfo */}
                     <Card {...cardInfo} />
                   </StyledEmailItem>
                 )
