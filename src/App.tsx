@@ -3,7 +3,6 @@ import axios from 'axios'
 import styled from 'styled-components'
 import { googleLogout, TokenResponse } from '@react-oauth/google'
 import Inbox from './components/Inbox/Inbox'
-import Dashboard from './components/Dashboard/Dashboard'
 import GoogleLoginButton from './components/Login/GoogleLoginButton'
 import ProfileDropdown from './components/ProfileDropdown/ProfileDropdown'
 
@@ -55,9 +54,6 @@ const App: React.FC = () => {
           <br />
           <ProfileDropdown profile={profile} onLogout={logOut} />
           <Inbox user={user} />
-          <br />
-          <br />
-          <Dashboard />
         </div>
       ) : (
         <GoogleLoginButton

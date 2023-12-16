@@ -1,71 +1,202 @@
 import React from 'react'
 import styled from 'styled-components'
+import { useAuth } from '../../context/AuthContext'
 
 const StyledCard = styled.div`
-  width: 300px;
-  height: 180px;
-  position: relative;
   perspective: 1000px;
-  transform-style: preserve-3d;
-  transition: transform 0.5s;
-  cursor: pointer;
-  margin: 0 auto; /* Center the card horizontally */
+  width: 400px;
+  height: 280px;
+  margin-bottom: 20px;
+  position: relative;
 
-  &:hover {
+  &:hover .flip,
+  &.hover .flip {
     transform: rotateY(180deg);
+  }
+
+  .flip {
+    transition: 0.6s;
+    transform-style: preserve-3d;
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .front,
+  .back {
+    width: 100%;
+    height: 100%;
+    border-radius: 15px;
+    backface-visibility: hidden;
+    position: absolute;
+    color: #fff;
+    font-family: Inconsolata;
+    text-shadow: 0 1px 1px hsla(0, 0, 0, 0.3);
+    box-shadow: 0 1px 6px hsla(0, 0, 0, 0.3);
+    transform: rotateY(0deg);
+  }
+
+  .front {
+    z-index: 2;
+    transform: rotateY(0deg);
+    background: linear-gradient(135deg, #bd6772, #53223f);
+  }
+
+  .back {
+    transform: rotateY(180deg);
+    background: linear-gradient(135deg, #53223f, #bd6772);
+  }
+
+  .chip {
+    position: absolute;
+    width: 60px;
+    height: 45px;
+    top: 20px;
+    left: 20px;
+    background: linear-gradient(
+      135deg,
+      hsl(269, 54%, 87%) 0%,
+      hsl(200, 64%, 89%) 44%,
+      hsl(18, 55%, 94%) 100%
+    );
+    border-radius: 8px;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+      border: 4px solid hsla(0, 0, 50, 0.1);
+      width: 80%;
+      height: 70%;
+      border-radius: 5px;
+    }
+  }
+
+  .strip {
+    background: linear-gradient(135deg, hsl(0, 0, 25%), hsl(0, 0, 10%));
+    position: absolute;
+    width: 100%;
+    height: 50px;
+    top: 30px;
+    left: 0;
+  }
+
+  .number {
+    position: absolute;
+    margin: 0 auto;
+    top: 103px;
+    left: 19px;
+    font-size: 38px;
+  }
+
+  .card-holder,
+  .card-expiration-date,
+  .ccv {
+    position: absolute;
+    margin: 0 auto;
+    font-size: 22px;
+    text-transform: capitalize;
+    color: #fff;
+  }
+
+  .card-holder {
+    top: 180px;
+    left: 19px;
+  }
+
+  .card-expiration-date {
+    text-align: right;
+    left: auto;
+    right: 20px;
+    top: 180px;
+  }
+
+  .ccv {
+    height: 36px;
+    background: #fff;
+    width: 91%;
+    border-radius: 5px;
+    top: 110px;
+    left: 0;
+    right: 0;
+    position: absolute;
+    margin: 0 auto;
+    color: #000;
+    text-align: right;
+    padding: 10px;
+  }
+  .user-name {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 18px;
+    font-family: 'Pacifico', cursive;
+  }
+  .days-left {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    font-size: 18px;
+    font-family: 'Pacifico', cursive;
   }
 `
 
-const getRandomColor = () => {
-  const colors = ['#3498db', '#2ecc71', '#e74c3c', '#f39c12', '#9b59b6'] // Add more colors if needed
-  const randomIndex = Math.floor(Math.random() * colors.length)
-  return colors[randomIndex]
-}
-
-const StyledCardFace = styled.div<{ backgroundColor: string }>`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  font-weight: bold;
-  color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: ${(props) => props.backgroundColor};
-`
-
-const FrontFace = styled(StyledCardFace)`
-  background-color: ${(props) => props.backgroundColor};
-`
-
-const BackFace = styled(StyledCardFace)`
-  background-color: ${(props) => props.backgroundColor};
-  transform: rotateY(180deg);
-`
-
 interface CardProps {
-  title: string
-  dueDate: string
+  cardName: string
+  cardNumber: string
+  bankName: string
   amountDue: number
+  dueDate: string
+  billingCycle: string
+  billingDate: string
+  totalAmountDue: string
 }
 
-const Card: React.FC<CardProps> = ({ title, dueDate, amountDue }) => {
-  const randomColor = getRandomColor()
+const Card: React.FC<CardProps> = ({
+  cardName,
+  cardNumber,
+  bankName,
+  amountDue,
+  dueDate,
+  billingCycle,
+  billingDate,
+  totalAmountDue,
+}) => {
+  const { user } = useAuth()
+
+  const calculateDaysLeft = (dueDate: string): number => {
+    const currentDate = new Date()
+    const dueDateTime = new Date(dueDate)
+    const timeDifference = dueDateTime.getTime() - currentDate.getTime()
+    const daysLeft = Math.ceil(timeDifference / (1000 * 60 * 60 * 24))
+    return daysLeft > 0 ? daysLeft : 0
+  }
+
+  const daysLeft = calculateDaysLeft(dueDate)
 
   return (
     <StyledCard>
-      <FrontFace backgroundColor={randomColor}>
-        <div>
-          <p>{title}</p>
-          <p>Due Date: {dueDate}</p>
-          <p>Amount Due: ${amountDue}</p>
+      <div className="flip">
+        <div className="front">
+          <div className="chip"></div>
+          <div className="strip"></div>
+          <div className="number">{cardNumber}</div>
+          <div className="card-holder">{cardName}</div>
+          <div className="card-expiration-date">$ {totalAmountDue}</div>
         </div>
-      </FrontFace>
-      <BackFace backgroundColor={randomColor}>Card Back</BackFace>
+        <div className="back">
+          <div className="user-name">{user?.name}</div>
+          <div className="strip"></div>
+          <div className="ccv">
+            <label>CCV</label>
+          </div>
+          <div className="days-left">{daysLeft} days left</div>
+        </div>
+      </div>
     </StyledCard>
   )
 }
