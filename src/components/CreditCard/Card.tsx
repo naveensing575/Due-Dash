@@ -2,6 +2,7 @@ import React from 'react'
 import styled, { keyframes, css } from 'styled-components'
 import { useAuth } from '../../context/AuthContext'
 import { calculateDaysLeft } from '../../utils/calcDaysLeft'
+import logoUrls from '../../config/logoLinks'
 
 const shakeAnimation = keyframes`
   0%, 100% {
@@ -57,6 +58,18 @@ const StyledCard = styled.div<{ isDueDateNegative?: boolean }>`
     z-index: 2;
     transform: rotateY(0deg);
     background: linear-gradient(135deg, #bd6772, #53223f);
+  }
+
+  .card-type {
+    position: absolute;
+    top: 30px;
+    right: 20px;
+    font-size: 18px;
+    color: #fff;
+    font-weight: bold;
+    img {
+      width: 80px;
+    }
   }
 
   .back {
@@ -186,8 +199,30 @@ const Card: React.FC<CardProps> = ({
 }) => {
   const { user } = useAuth()
 
+  const getCardType = (cardNumber: string): string => {
+    let re = new RegExp('^4')
+    if (cardNumber.match(re) !== null) return 'Visa'
+
+    re = new RegExp('^(34|57)')
+    if (cardNumber.match(re) !== null) return 'American Express'
+
+    re = new RegExp('^5[1-5]')
+    if (cardNumber.match(re) !== null) return 'Mastercard'
+
+    re = new RegExp('^6011')
+    if (cardNumber.match(re) !== null) return 'Discover'
+
+    re = new RegExp('^9792')
+    if (cardNumber.match(re) !== null) return 'Troy'
+
+    return 'Visa' // default type
+  }
+
   const daysLeft = calculateDaysLeft(dueDate)
   const isDueDateNegative = daysLeft <= 0
+
+  // Determine the card type based on the last digit
+  const cardType = getCardType(cardNumber)
 
   return (
     <StyledCard isDueDateNegative={isDueDateNegative}>
@@ -198,6 +233,23 @@ const Card: React.FC<CardProps> = ({
           <div className="number">{cardNumber}</div>
           <div className="card-holder">{cardName}</div>
           <div className="card-expiration-date">$ {totalAmountDue}</div>
+          {cardType && (
+            <div className="card-type">
+              {cardType === 'Visa' ? (
+                <img src={logoUrls.visa} alt="Visa" />
+              ) : cardType === 'Mastercard' ? (
+                <img src={logoUrls.mastercard} alt="Mastercard" />
+              ) : cardType === 'American Express' ? (
+                <img src={logoUrls.americanExpress} alt="American Express" />
+              ) : cardType === 'Discover' ? (
+                <img src={logoUrls.discover} alt="Discover" />
+              ) : cardType === 'Troy' ? (
+                <img src={logoUrls.troy} alt="Troy" />
+              ) : (
+                <span>{cardType}</span>
+              )}
+            </div>
+          )}
         </div>
         <div className="back">
           <div className="user-name">{user?.name}</div>
