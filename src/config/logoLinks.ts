@@ -1,12 +1,12 @@
 const logoUrls = {
-  visa: 'https://raw.githubusercontent.com/muhammederdem/credit-card-form/master/src/assets/images/visa.png',
+  visa: 'https://git.itelasoft.com.au/naveen.singh/due-dash/raw/dev/src/assets/visa.png',
   mastercard:
-    'https://raw.githubusercontent.com/muhammederdem/credit-card-form/master/src/assets/images/mastercard.png',
+    'https://git.itelasoft.com.au/naveen.singh/due-dash/raw/dev/src/assets/mastercard.png',
   americanExpress:
-    'https://raw.githubusercontent.com/muhammederdem/credit-card-form/master/src/assets/images/amex.png',
+    'https://git.itelasoft.com.au/naveen.singh/due-dash/raw/dev/src/assets/amex.png',
   discover:
-    'https://raw.githubusercontent.com/muhammederdem/credit-card-form/master/src/assets/images/discover.png',
-  troy: 'https://raw.githubusercontent.com/muhammederdem/credit-card-form/master/src/assets/images/troy.png',
+    'https://git.itelasoft.com.au/naveen.singh/due-dash/raw/dev/src/assets/discover.png',
+  troy: 'https://git.itelasoft.com.au/naveen.singh/due-dash/raw/dev/src/assets/troy.png',
 }
 
 export default logoUrls
