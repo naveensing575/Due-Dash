@@ -200,22 +200,19 @@ const Card: React.FC<CardProps> = ({
   const { user } = useAuth()
 
   const getCardType = (cardNumber: string): string => {
-    let re = new RegExp('^4')
-    if (cardNumber.match(re) !== null) return 'Visa'
+    if (cardNumber.startsWith('4')) return 'Visa'
+    if (cardNumber.startsWith('34') || cardNumber.startsWith('37'))
+      return 'American Express'
+    if (
+      cardNumber.startsWith('5') &&
+      parseInt(cardNumber[1], 10) >= 1 &&
+      parseInt(cardNumber[1], 10) <= 5
+    )
+      return 'Mastercard'
+    if (cardNumber.startsWith('6011')) return 'Discover'
+    if (cardNumber.startsWith('9792')) return 'Troy'
 
-    re = new RegExp('^(34|57)')
-    if (cardNumber.match(re) !== null) return 'American Express'
-
-    re = new RegExp('^5[1-5]')
-    if (cardNumber.match(re) !== null) return 'Mastercard'
-
-    re = new RegExp('^6011')
-    if (cardNumber.match(re) !== null) return 'Discover'
-
-    re = new RegExp('^9792')
-    if (cardNumber.match(re) !== null) return 'Troy'
-
-    return 'Visa' // default type
+    return 'Unknown'
   }
 
   const daysLeft = calculateDaysLeft(dueDate)
@@ -235,19 +232,22 @@ const Card: React.FC<CardProps> = ({
           <div className="card-expiration-date">$ {totalAmountDue}</div>
           {cardType && (
             <div className="card-type">
-              {cardType === 'Visa' ? (
-                <img src={logoUrls.visa} alt="Visa" />
-              ) : cardType === 'Mastercard' ? (
+              {cardType === 'Visa' && <img src={logoUrls.visa} alt="Visa" />}
+              {cardType === 'Mastercard' && (
                 <img src={logoUrls.mastercard} alt="Mastercard" />
-              ) : cardType === 'American Express' ? (
-                <img src={logoUrls.americanExpress} alt="American Express" />
-              ) : cardType === 'Discover' ? (
-                <img src={logoUrls.discover} alt="Discover" />
-              ) : cardType === 'Troy' ? (
-                <img src={logoUrls.troy} alt="Troy" />
-              ) : (
-                <span>{cardType}</span>
               )}
+              {cardType === 'American Express' && (
+                <img src={logoUrls.americanExpress} alt="American Express" />
+              )}
+              {cardType === 'Discover' && (
+                <img src={logoUrls.discover} alt="Discover" />
+              )}
+              {cardType === 'Troy' && <img src={logoUrls.troy} alt="Troy" />}
+              {cardType !== 'Visa' &&
+                cardType !== 'Mastercard' &&
+                cardType !== 'American Express' &&
+                cardType !== 'Discover' &&
+                cardType !== 'Troy' && <span>{cardType}</span>}
             </div>
           )}
         </div>
