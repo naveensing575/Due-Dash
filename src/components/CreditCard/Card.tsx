@@ -200,19 +200,22 @@ const Card: React.FC<CardProps> = ({
   const { user } = useAuth()
 
   const getCardType = (cardNumber: string): string => {
-    if (cardNumber.startsWith('4')) return 'Visa'
-    if (cardNumber.startsWith('34') || cardNumber.startsWith('37'))
-      return 'American Express'
-    if (
-      cardNumber.startsWith('5') &&
-      parseInt(cardNumber[1], 10) >= 1 &&
-      parseInt(cardNumber[1], 10) <= 5
-    )
-      return 'Mastercard'
-    if (cardNumber.startsWith('6011')) return 'Discover'
-    if (cardNumber.startsWith('9792')) return 'Troy'
+    let re = new RegExp('^4')
+    if (cardNumber.match(re) !== null) return 'Visa'
 
-    return 'Unknown'
+    re = new RegExp('^(34|57)')
+    if (cardNumber.match(re) !== null) return 'American Express'
+
+    re = new RegExp('^5[1-5]')
+    if (cardNumber.match(re) !== null) return 'Mastercard'
+
+    re = new RegExp('^6011')
+    if (cardNumber.match(re) !== null) return 'Discover'
+
+    re = new RegExp('^9792')
+    if (cardNumber.match(re) !== null) return 'Troy'
+
+    return 'Visa' // default type
   }
 
   const daysLeft = calculateDaysLeft(dueDate)
