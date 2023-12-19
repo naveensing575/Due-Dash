@@ -9,15 +9,15 @@ const shakeAnimation = keyframes`
     transform: translateX(0);
   }
   10%, 30%, 50%, 70%, 90% {
-    transform: translateX(-10px);
+    transform: translateX(-5px);
   }
   20%, 40%, 60%, 80% {
-    transform: translateX(10px);
+    transform: translateX(5px);
   }
 `
 
 const shakeStyles = css`
-  animation: ${shakeAnimation} 0.8s ease-in-out;
+  animation: ${shakeAnimation} 0.8s;
 `
 
 const StyledCard = styled.div<{ isDueDateNegative?: boolean }>`
@@ -76,8 +76,11 @@ const StyledCard = styled.div<{ isDueDateNegative?: boolean }>`
     transform: rotateY(180deg);
     background: linear-gradient(135deg, #53223f, #bd6772);
     ${(props) => props.isDueDateNegative && shakeStyles};
-    border: ${(props) => (props.isDueDateNegative ? '2px solid red' : 'none')};
+    border: ${(props) =>
+      props.isDueDateNegative ? '4px solid #fa2a2a' : 'none'};
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   }
+
   .chip {
     position: absolute;
     width: 60px;
