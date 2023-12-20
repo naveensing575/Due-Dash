@@ -1,10 +1,9 @@
-// Inbox.tsx
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { useAuth } from '../../context/AuthContext'
-import { decodeBase64 } from '../../utils/decode'
-import Card from '../CreditCard/Card'
-import { get } from '../../services/api'
+import { useAuth } from '../context/AuthContext'
+import { decodeBase64 } from '../utils/decode'
+import Card from '../components/CreditCard/Card'
+import { get } from '../services/api'
 
 interface UserProfile {
   picture: string

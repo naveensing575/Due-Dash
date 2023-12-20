@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import styled from 'styled-components'
 import { googleLogout, TokenResponse } from '@react-oauth/google'
-import Inbox from './components/Inbox/Inbox'
+import Inbox from './pages/Inbox'
 import GoogleLoginButton from './components/Login/GoogleLoginButton'
 import ProfileDropdown from './components/ProfileDropdown/ProfileDropdown'
+import EncryptedInbox from './pages/EncrpytedInbox'
 
 interface UserProfile {
   picture: string
@@ -53,7 +54,8 @@ const App: React.FC = () => {
         <div>
           <br />
           <ProfileDropdown profile={profile} onLogout={logOut} />
-          <Inbox user={user} />
+          {/* <Inbox user={user} /> */}
+          <EncryptedInbox user={user} />
         </div>
       ) : (
         <GoogleLoginButton

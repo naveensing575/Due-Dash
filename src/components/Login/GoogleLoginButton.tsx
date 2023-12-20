@@ -1,10 +1,11 @@
+// In GoogleLoginButton.js
 import React from 'react'
 import styled from 'styled-components'
-import { useGoogleLogin, TokenResponse } from '@react-oauth/google'
-import { useAuth } from '../../context/AuthContext'
+import { app } from '../../config/firebaseConfig' // Adjust the path as needed
+import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 
 interface GoogleLoginButtonProps {
-  onSuccess: (tokenResponse: TokenResponse) => void
+  onSuccess: (tokenResponse: any) => void // Adjust the type based on your needs
   onError: (error: any) => void
 }
 
@@ -27,51 +28,32 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
   onSuccess,
   onError,
 }) => {
-  const { signIn } = useAuth()
+  const handleGoogleLogin = async () => {
+    try {
+      const auth = getAuth(app)
+      const provider = new GoogleAuthProvider()
+      const result = await signInWithPopup(auth, provider)
 
-  const login = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      // Fetch user profile using the obtained access_token
-      try {
-        const profileResponse = await fetch(
-          'https://www.googleapis.com/oauth2/v2/userinfo',
-          {
-            headers: {
-              Authorization: `Bearer ${tokenResponse.access_token}`,
-            },
-          },
-        )
-
-        if (!profileResponse.ok) {
-          throw new Error('Failed to fetch user profile')
-        }
-
-        const userProfile = await profileResponse.json()
-
-        // Update the user profile in the AuthContext
-        signIn({
-          id: userProfile.id,
-          name: userProfile.name,
-          email: userProfile.email,
-        })
-
-        // Call the original onSuccess callback
-        onSuccess(tokenResponse)
-      } catch (error) {
-        console.error('Error fetching user profile:', error)
-        onError(error)
+      // Check if the user canceled the login
+      if (!result.user) {
+        throw new Error('Google login canceled')
       }
-    },
-    onError: (error) => onError(error),
-    scope: 'https://www.googleapis.com/auth/gmail.readonly',
-  })
 
-  const handleLoginClick = () => {
-    login() // Wrap the login call in a function
+      // Extract user information as needed
+      const user = result.user
+
+      // Perform additional actions if needed
+
+      // Call the onSuccess callback with the user or relevant data
+      onSuccess(user) // Pass the user or relevant data here
+    } catch (error) {
+      console.error('Error during Google login:', error)
+      onError(error)
+    }
   }
 
   return (
-    <StyledGoogleLoginButton onClick={handleLoginClick}>
+    <StyledGoogleLoginButton onClick={handleGoogleLogin}>
       Sign in with Google 🚀
     </StyledGoogleLoginButton>
   )

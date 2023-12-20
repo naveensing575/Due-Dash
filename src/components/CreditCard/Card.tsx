@@ -1,8 +1,8 @@
-import React from 'react'
-import styled, { keyframes, css } from 'styled-components'
-import { useAuth } from '../../context/AuthContext'
-import { calculateDaysLeft } from '../../utils/calcDaysLeft'
-import logoUrls from '../../config/logoLinks'
+import React from 'react';
+import styled, { keyframes, css } from 'styled-components';
+import { useAuth } from '../../context/AuthContext';
+import { calculateDaysLeft } from '../../utils/calcDaysLeft';
+import logoUrls from '../../config/logoLinks';
 
 const shakeAnimation = keyframes`
   0%, 100% {
@@ -14,11 +14,11 @@ const shakeAnimation = keyframes`
   20%, 40%, 60%, 80% {
     transform: translateX(5px);
   }
-`
+`;
 
 const shakeStyles = css`
   animation: ${shakeAnimation} 0.8s;
-`
+`;
 
 const StyledCard = styled.div<{ isDueDateNegative?: boolean }>`
   perspective: 1000px;
@@ -76,8 +76,7 @@ const StyledCard = styled.div<{ isDueDateNegative?: boolean }>`
     transform: rotateY(180deg);
     background: linear-gradient(135deg, #53223f, #bd6772);
     ${(props) => props.isDueDateNegative && shakeStyles};
-    border: ${(props) =>
-      props.isDueDateNegative ? '4px solid #fa2a2a' : 'none'};
+    border: none; // Removed the border
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   }
 
@@ -177,17 +176,17 @@ const StyledCard = styled.div<{ isDueDateNegative?: boolean }>`
     font-size: 18px;
     font-family: 'Pacifico', cursive;
   }
-`
+`;
 
 interface CardProps {
-  cardName: string
-  cardNumber: string
-  bankName: string
-  amountDue: number
-  dueDate: string
-  billingCycle: string
-  billingDate: string
-  totalAmountDue: string
+  cardName: string;
+  cardNumber: string;
+  bankName: string;
+  amountDue: number;
+  dueDate: string;
+  billingCycle: string;
+  billingDate: string;
+  totalAmountDue: string;
 }
 
 const Card: React.FC<CardProps> = ({
@@ -200,32 +199,32 @@ const Card: React.FC<CardProps> = ({
   billingDate,
   totalAmountDue,
 }) => {
-  const { user } = useAuth()
+  const { user } = useAuth();
 
   const getCardType = (cardNumber: string): string => {
-    let re = new RegExp('^4')
-    if (cardNumber.match(re) !== null) return 'Visa'
+    let re = new RegExp('^4');
+    if (cardNumber.match(re) !== null) return 'Visa';
 
-    re = new RegExp('^(34|57)')
-    if (cardNumber.match(re) !== null) return 'American Express'
+    re = new RegExp('^(34|57)');
+    if (cardNumber.match(re) !== null) return 'American Express';
 
-    re = new RegExp('^5[1-5]')
-    if (cardNumber.match(re) !== null) return 'Mastercard'
+    re = new RegExp('^5[1-5]');
+    if (cardNumber.match(re) !== null) return 'Mastercard';
 
-    re = new RegExp('^6011')
-    if (cardNumber.match(re) !== null) return 'Discover'
+    re = new RegExp('^6011');
+    if (cardNumber.match(re) !== null) return 'Discover';
 
-    re = new RegExp('^9792')
-    if (cardNumber.match(re) !== null) return 'Troy'
+    re = new RegExp('^9792');
+    if (cardNumber.match(re) !== null) return 'Troy';
 
-    return 'Visa' // default type
-  }
+    return 'Visa'; // default type
+  };
 
-  const daysLeft = calculateDaysLeft(dueDate)
-  const isDueDateNegative = daysLeft <= 0
+  const daysLeft = calculateDaysLeft(dueDate);
+  const isDueDateNegative = daysLeft <= 0;
 
   // Determine the card type based on the last digit
-  const cardType = getCardType(cardNumber)
+  const cardType = getCardType(cardNumber);
 
   return (
     <StyledCard isDueDateNegative={isDueDateNegative}>
@@ -277,7 +276,7 @@ const Card: React.FC<CardProps> = ({
         </div>
       </div>
     </StyledCard>
-  )
-}
+  );
+};
 
-export default Card
+export default Card;
