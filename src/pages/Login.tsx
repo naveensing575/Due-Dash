@@ -1,37 +1,58 @@
-// Login.js
-import React from 'react'
-import styled from 'styled-components'
+import React, { useEffect } from 'react'
+import styled, { keyframes } from 'styled-components'
 import GoogleLoginButton from '../components/Login/GoogleLoginButton'
 import { useNavigate } from 'react-router'
+import { checkUserExistence } from '../services/firestoreService'
 
 const LoginContainer = styled.div`
   text-align: center;
   position: relative;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 `
 
-const VideoBackground = styled.video`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: -1;
+const levitateAnimation = keyframes`
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 `
 
-const LoginContent = styled.div`
-  z-index: 1;
+const TextContainer = styled.div`
+  color: white;
+  margin-bottom: 20px;
+  user-select: none;
+  span {
+    font-family: 'Anton', sans-serif;
+    font-weight: bold;
+    font-size: 3rem;
+    letter-spacing: 2px;
+    display: inline-block;
+    animation: ${levitateAnimation} 2s infinite;
+  }
 `
 
 const Login = () => {
   const navigate = useNavigate()
 
-  const handleLoginSuccess = (userData: any) => {
-    // Print user data on success
-    console.log('Login successful:', userData)
+  const handleLoginSuccess = async (userData: any) => {
+    // Check if the user is already registered
+    const isUserRegistered = await checkUserExistence(userData.uid)
 
-    // Redirect to dashboard
-    navigate('/dashboard')
+    if (isUserRegistered) {
+      navigate('/dashboard')
+    } else {
+      navigate('/register')
+    }
   }
 
   const handleLoginError = (error: any) => {
@@ -39,20 +60,24 @@ const Login = () => {
     console.error('Login error:', error)
   }
 
+  const generateRandomDelay = () => Math.random() * 1 // Adjust the factor as needed
+
   return (
     <LoginContainer>
-      <VideoBackground autoPlay loop muted>
-        {/* Provide the source of your video file */}
-        <source src="../assets/card.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </VideoBackground>
-      <LoginContent>
-        <h2>Login</h2>
-        <GoogleLoginButton
-          onSuccess={handleLoginSuccess}
-          onError={handleLoginError}
-        />
-      </LoginContent>
+      <TextContainer>
+        {'Due-Dash'.split('').map((letter, index) => (
+          <span
+            key={index}
+            style={{ animationDelay: `${generateRandomDelay()}s` }}
+          >
+            {letter}
+          </span>
+        ))}
+      </TextContainer>
+      <GoogleLoginButton
+        onSuccess={handleLoginSuccess}
+        onError={handleLoginError}
+      />
     </LoginContainer>
   )
 }

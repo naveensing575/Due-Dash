@@ -1,15 +1,16 @@
-// In GoogleLoginButton.js
 import React from 'react'
-import styled from 'styled-components'
-import { app } from '../../config/firebaseConfig' // Adjust the path as needed
+import styled, { keyframes } from 'styled-components'
+import { app } from '../../config/firebaseConfig'
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import GoogleIcon from '../../assets/googleIcon.svg'
 
 interface GoogleLoginButtonProps {
-  onSuccess: (tokenResponse: any) => void // Adjust the type based on your needs
+  onSuccess: (tokenResponse: any) => void
   onError: (error: any) => void
 }
 
 const StyledGoogleLoginButton = styled.button`
+  position: relative;
   background-color: #4285f4;
   color: #fff;
   border: none;
@@ -17,10 +18,13 @@ const StyledGoogleLoginButton = styled.button`
   font-size: 16px;
   cursor: pointer;
   border-radius: 4px;
-  transition: background-color 0.3s;
+  overflow: hidden;
 
-  &:hover {
-    background-color: #317ae2;
+  .google-icon {
+    width: 20px;
+    height: 20px;
+    transform: translateY(3px);
+    margin-left: 5px;
   }
 `
 
@@ -34,18 +38,13 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
       const provider = new GoogleAuthProvider()
       const result = await signInWithPopup(auth, provider)
 
-      // Check if the user canceled the login
       if (!result.user) {
         throw new Error('Google login canceled')
       }
 
-      // Extract user information as needed
       const user = result.user
 
-      // Perform additional actions if needed
-
-      // Call the onSuccess callback with the user or relevant data
-      onSuccess(user) // Pass the user or relevant data here
+      onSuccess(user)
     } catch (error) {
       console.error('Error during Google login:', error)
       onError(error)
@@ -54,7 +53,8 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
 
   return (
     <StyledGoogleLoginButton onClick={handleGoogleLogin}>
-      Sign in with Google 🚀
+      Sign in with Google{' '}
+      <img src={GoogleIcon} alt="Google Icon" className="google-icon" />
     </StyledGoogleLoginButton>
   )
 }

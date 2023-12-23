@@ -1,4 +1,4 @@
-const logoUrls = {
+export const logoUrls = {
   visa: 'https://git.itelasoft.com.au/naveen.singh/due-dash/raw/dev/src/assets/visa.png',
   mastercard:
     'https://git.itelasoft.com.au/naveen.singh/due-dash/raw/dev/src/assets/mastercard.png',
@@ -9,4 +9,5 @@ const logoUrls = {
   troy: 'https://git.itelasoft.com.au/naveen.singh/due-dash/raw/dev/src/assets/troy.png',
 }
 
-export default logoUrls
+export const videoLink =
+  'https://git.itelasoft.com.au/naveen.singh/due-dash/raw/dev/src/assets/card.mp4'

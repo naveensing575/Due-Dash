@@ -4,6 +4,9 @@ import styled from 'styled-components'
 
 const SignupContainer = styled.div`
   text-align: center;
+  margin-top: 50px;
+  color: #fff;
+  font-family: Anton, sans-serif;
 `
 
 const SignupForm = styled.form`
@@ -14,26 +17,48 @@ const SignupForm = styled.form`
 `
 
 const FormInput = styled.input`
-  margin-bottom: 10px;
-  padding: 8px;
+  margin-bottom: 15px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+
+  &:focus {
+    border-color: #4caf50;
+  }
 `
 
 const SignupButton = styled.button`
-  background-color: #4caf50;
+  background-color: #4285f4;
   color: #fff;
   border: none;
-  padding: 10px;
+  padding: 12px;
   font-size: 16px;
   cursor: pointer;
   border-radius: 4px;
   transition: background-color 0.3s;
 
   &:hover {
-    background-color: #45a049;
+    background-color: #3367d6;
+  }
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
   }
 `
 
-const Signup = () => {
+interface FeedbackMessageProps {
+  success: boolean
+}
+
+const FeedbackMessage = styled.div<FeedbackMessageProps>`
+  margin-top: 10px;
+  color: ${(props) => (props.success ? '#4caf50' : '#ff1744')};
+`
+
+const Registration = () => {
   const { signIn } = useAuth()
   const [formData, setFormData] = useState({
     firstName: '',
@@ -41,8 +66,10 @@ const Signup = () => {
     phoneNumber: '',
     dob: '',
   })
+  const [loading, setLoading] = useState(false)
+  const [feedback, setFeedback] = useState({ message: '', success: false })
 
-  const handleInputChange = (e: any) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prevData) => ({
       ...prevData,
@@ -50,12 +77,17 @@ const Signup = () => {
     }))
   }
 
-  const handleSignup = async (e: any) => {
+  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     // Add your form validation logic here
 
     try {
+      setLoading(true)
+
+      // Simulating an asynchronous signup process
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
       const user = {
         uid: 'mockedUserId', // You might want to generate a unique ID for the user
         email: `${formData.firstName.toLowerCase()}@example.com`, // Mocked email based on the first name
@@ -65,9 +97,16 @@ const Signup = () => {
 
       // Additional steps if needed after successful signup
       signIn(user)
+
+      setFeedback({ message: 'Signup successful!', success: true })
     } catch (error) {
       console.error('Error during signup:', error)
-      // Handle signup error
+      setFeedback({
+        message: 'Error during signup. Please try again.',
+        success: false,
+      })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -81,6 +120,7 @@ const Signup = () => {
           placeholder="First Name"
           value={formData.firstName}
           onChange={handleInputChange}
+          required
         />
         <FormInput
           type="text"
@@ -88,6 +128,7 @@ const Signup = () => {
           placeholder="Last Name"
           value={formData.lastName}
           onChange={handleInputChange}
+          required
         />
         <FormInput
           type="tel"
@@ -95,6 +136,7 @@ const Signup = () => {
           placeholder="Phone Number"
           value={formData.phoneNumber}
           onChange={handleInputChange}
+          required
         />
         <FormInput
           type="date"
@@ -102,12 +144,19 @@ const Signup = () => {
           placeholder="Date of Birth"
           value={formData.dob}
           onChange={handleInputChange}
+          required
         />
-        {/* Add additional form fields as needed */}
-        <SignupButton type="submit">Sign Up</SignupButton>
+        <SignupButton type="submit" disabled={loading}>
+          {loading ? 'Signing Up...' : 'Sign Up'}
+        </SignupButton>
       </SignupForm>
+      {feedback.message && (
+        <FeedbackMessage success={feedback.success}>
+          {feedback.message}
+        </FeedbackMessage>
+      )}
     </SignupContainer>
   )
 }
 
-export default Signup
+export default Registration
