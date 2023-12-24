@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { videoLink } from '../../config/logoLinks'
+import { videoLink } from '../../config/Links'
 
 const VideoContainer = styled.div`
   position: absolute;

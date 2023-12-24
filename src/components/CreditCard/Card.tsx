@@ -2,7 +2,7 @@ import React from 'react'
 import styled, { keyframes, css } from 'styled-components'
 import { useAuth } from '../../context/AuthContext'
 import { calculateDaysLeft } from '../../utils/calcDaysLeft'
-import { logoUrls } from '../../config/logoLinks'
+import { logoUrls } from '../../config/Links'
 
 const shakeAnimation = keyframes`
   0%, 100% {
