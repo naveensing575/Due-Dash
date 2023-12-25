@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import GoogleLoginButton from '../components/Login/GoogleLoginButton'
 import { useNavigate } from 'react-router'

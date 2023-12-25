@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { videoLink } from '../../config/Links'
 
@@ -21,10 +21,17 @@ const VideoContainer = styled.div`
   }
 `
 
-const VideoBackground = () => {
+const Video = () => {
+  const [key, setKey] = useState(0)
+
+  const restartVideo = () => {
+    // Incrementing the key will force the video to remount and restart
+    setKey((prevKey) => prevKey + 1)
+  }
+
   return (
     <VideoContainer>
-      <video autoPlay loop muted playsInline>
+      <video key={key} autoPlay loop muted playsInline onEnded={restartVideo}>
         <source src={videoLink} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
@@ -32,4 +39,4 @@ const VideoBackground = () => {
   )
 }
 
-export default VideoBackground
+export default Video

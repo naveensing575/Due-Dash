@@ -1,13 +1,12 @@
 import React from 'react'
 import Root from './routes'
-import VideoBackground from './components/VideoBackground/VideoBackground'
+import BackgroundContainer from './components/Background/BackgroundContainer'
 
 const App: React.FC = () => {
   return (
-    <>
-      <VideoBackground />
+    <BackgroundContainer>
       <Root />
-    </>
+    </BackgroundContainer>
   )
 }
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import styled from 'styled-components'
+import { useNavigate } from 'react-router'
 
 const SignupContainer = styled.div`
   text-align: center;
@@ -69,6 +70,7 @@ const Registration = () => {
   const [loading, setLoading] = useState(false)
   const [feedback, setFeedback] = useState({ message: '', success: false })
 
+  const navigate = useNavigate()
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prevData) => ({
@@ -99,6 +101,16 @@ const Registration = () => {
       signIn(user)
 
       setFeedback({ message: 'Signup successful!', success: true })
+
+      // Reset form fields
+      setFormData({
+        firstName: '',
+        lastName: '',
+        phoneNumber: '',
+        dob: '',
+      })
+
+      navigate('/dashboard')
     } catch (error) {
       console.error('Error during signup:', error)
       setFeedback({
