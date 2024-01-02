@@ -67,8 +67,6 @@ const Registration = () => {
   const { signIn, signOut, user } = useAuth()
   const navigate = useNavigate()
 
-  console.log(user, 'laskfjaskldjaskljdklasj')
-
   useEffect(() => {
     if (!user) {
       navigate('/login')

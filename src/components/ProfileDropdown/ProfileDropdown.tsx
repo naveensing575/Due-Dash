@@ -1,14 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-
-interface ProfileDropdownProps {
-  profile: {
-    picture: string
-    name: string
-    email: string
-  }
-  onLogout: () => void
-}
+import { useAuth } from '../../context/AuthContext'
 
 const Container = styled.div`
   position: relative;
@@ -25,7 +17,9 @@ const DropdownContainer = styled.div`
   z-index: 1;
   border-radius: 4px;
   overflow: hidden;
+  color: white;
 `
+
 const ProfileImage = styled.img`
   width: 40px;
   height: 40px;
@@ -49,10 +43,8 @@ const LogoutButton = styled.button`
   }
 `
 
-const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
-  profile,
-  onLogout,
-}) => {
+const ProfileDropdown: React.FC = () => {
+  const { user, signOut } = useAuth()
   const [showDropdown, setShowDropdown] = useState(false)
 
   const toggleDropdown = () => {
@@ -62,16 +54,16 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
   return (
     <Container>
       <ProfileImage
-        src={profile.picture}
+        src={user?.pictureUrl || ''}
         alt="user image"
         onClick={toggleDropdown}
       />
       {showDropdown && (
         <DropdownContainer>
           <DropdownContent>
-            <p>{profile.name}</p>
-            <p>{profile.email}</p>
-            <LogoutButton onClick={onLogout}>Logout</LogoutButton>
+            <p>{user?.fullName}</p>
+            <p>{user?.email}</p>
+            <LogoutButton onClick={signOut}>Logout</LogoutButton>
           </DropdownContent>
         </DropdownContainer>
       )}

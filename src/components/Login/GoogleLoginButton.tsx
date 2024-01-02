@@ -47,11 +47,15 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
       // Extract full name from the displayName property
       const fullName = user.displayName || ''
 
+      // Extract profile picture URL from the photoURL property
+      const profilePictureUrl = user.photoURL || ''
+
       // Pass the entire user object with additional info to onSuccess
       onSuccess({
         uid: user.uid,
         email: user.email,
         fullName,
+        profilePictureUrl, // Include profile picture URL in the data
       })
     } catch (error) {
       console.error('Error during Google login:', error)

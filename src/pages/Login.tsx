@@ -46,6 +46,9 @@ const Login = () => {
   const { signIn } = useAuth()
   const handleLoginSuccess = async (userData: any) => {
     console.log('Login successful:', userData)
+
+    console.log('Profile Picture URL:', userData.profilePictureUrl)
+
     try {
       // Query the user based on UID
       const users = await queryUsers('uid', userData.uid)

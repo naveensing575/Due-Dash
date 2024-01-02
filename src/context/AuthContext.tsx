@@ -1,10 +1,12 @@
+// AuthContext.tsx
+
 import React, { createContext, useContext, useState } from 'react'
 
-interface User {
+export interface User {
   id: string
-  name: string
   email: string
   fullName?: string
+  pictureUrl?: string
 }
 
 interface AuthContextType {
@@ -12,12 +14,12 @@ interface AuthContextType {
   uid: string | null
   signIn: (userData: {
     id: string
-    fullName: string
     uid: string
     email: string
-    name: string
+    fullName: string
     phoneNumber: string
     dob: string
+    pictureUrl?: string
   }) => void
   signOut: () => void
 }
@@ -36,16 +38,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     id: string
     uid: string
     email: string
-    name: string
     fullName: string
     phoneNumber: string
     dob: string
+    pictureUrl?: string // Include the pictureUrl property in the signIn method
   }) => {
     setUser({
       id: userData.uid,
-      name: userData.name,
       email: userData.email,
-      fullName: userData.fullName, // Assuming fullName is derived from the name property
+      fullName: userData.fullName,
+      pictureUrl: userData.pictureUrl, // Assign the pictureUrl if provided
     })
     setUid(userData.uid)
 
@@ -66,8 +68,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signOut,
   }
 
-
-  console.log(user , " user ")
+  console.log(user, ' user ')
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   )
