@@ -1,27 +1,61 @@
 import {
   getFirestore,
   collection,
-  getDocs,
   doc,
-  getDoc,
-  DocumentReference,
+  setDoc,
+  getDocs,
+  query,
+  where,
   DocumentData,
 } from 'firebase/firestore'
+import { app } from '../config/firebaseConfig' // Assuming your Firebase configuration file is named 'firebaseConfig.tsx'
 
-import { app } from '../config/firebaseConfig'
+interface UserData {
+  uid: string
+  firstName: string
+  lastName: string
+  phoneNumber: string
+  dob: string
+}
 
 const db = getFirestore(app)
 
-const checkUserExistence = async (uid: string): Promise<boolean> => {
-  const userRef: DocumentReference<DocumentData> = doc(db, 'users', uid)
-
+// Function to add user data to Firestore during registration
+const registerUser = async (userData: UserData): Promise<void> => {
   try {
-    const userSnapshot = await getDoc(userRef)
-    return userSnapshot.exists()
+    const userRef = doc(db, 'users', userData.uid)
+    await setDoc(userRef, {
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      phoneNumber: userData.phoneNumber,
+      dob: userData.dob,
+    })
+    console.log('User data successfully added to Firestore.')
   } catch (error) {
-    console.error('Error checking user existence:', error)
-    return false
+    console.error('Error adding user data to Firestore:', error)
+    throw error // Propagate the error to handle it in the component
   }
 }
 
-export { checkUserExistence }
+// Function to query users based on a specific condition
+const queryUsers = async (
+  field: string,
+  value: string,
+): Promise<DocumentData[]> => {
+  try {
+    const q = query(collection(db, 'users'), where(field, '==', value))
+    const querySnapshot = await getDocs(q)
+
+    const users: DocumentData[] = []
+    querySnapshot.forEach((doc) => {
+      users.push({ id: doc.id, ...doc.data() })
+    })
+
+    return users
+  } catch (error) {
+    console.error('Error querying users from Firestore:', error)
+    throw error // Propagate the error to handle it in the component
+  }
+}
+
+export { registerUser, queryUsers }

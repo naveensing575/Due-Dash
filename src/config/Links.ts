@@ -11,6 +11,3 @@ export const logoUrls = {
 
 export const videoLink =
   'https://git.itelasoft.com.au/naveen.singh/due-dash/raw/dev/src/assets/card.mp4'
-
-export const audioLink =
-  'https://git.itelasoft.com.au/naveen.singh/due-dash/raw/dev/src/assets/bgAudio.mp3'

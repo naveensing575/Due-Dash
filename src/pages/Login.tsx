@@ -2,7 +2,7 @@ import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import GoogleLoginButton from '../components/Login/GoogleLoginButton'
 import { useNavigate } from 'react-router'
-import { checkUserExistence } from '../services/firestoreService'
+import { queryUsers } from '../services/firestoreService'
 
 const LoginContainer = styled.div`
   text-align: center;
@@ -45,13 +45,21 @@ const Login = () => {
   const navigate = useNavigate()
 
   const handleLoginSuccess = async (userData: any) => {
-    // Check if the user is already registered
-    const isUserRegistered = await checkUserExistence(userData.uid)
+    console.log('Login successful:', userData)
+    try {
+      // Query the user based on UID
+      const users = await queryUsers('uid', userData.uid)
 
-    if (isUserRegistered) {
-      navigate('/dashboard')
-    } else {
-      navigate('/register')
+      if (users.length > 0) {
+        // If user is found, navigate to the dashboard
+        navigate('/dashboard')
+      } else {
+        // If user is not found, navigate to the registration page
+        navigate('/register')
+      }
+    } catch (error) {
+      console.error('Error during login:', error)
+      // Handle the error as needed
     }
   }
 

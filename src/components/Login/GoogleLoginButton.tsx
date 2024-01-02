@@ -1,11 +1,11 @@
 import React from 'react'
-import styled, { keyframes } from 'styled-components'
+import styled from 'styled-components'
 import { app } from '../../config/firebaseConfig'
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import GoogleIcon from '../../assets/googleIcon.svg'
 
 interface GoogleLoginButtonProps {
-  onSuccess: (tokenResponse: any) => void
+  onSuccess: (userData: any) => void
   onError: (error: any) => void
 }
 
@@ -44,7 +44,15 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
 
       const user = result.user
 
-      onSuccess(user)
+      // Extract full name from the displayName property
+      const fullName = user.displayName || ''
+
+      // Pass the entire user object with additional info to onSuccess
+      onSuccess({
+        uid: user.uid,
+        email: user.email,
+        fullName,
+      })
     } catch (error) {
       console.error('Error during Google login:', error)
       onError(error)

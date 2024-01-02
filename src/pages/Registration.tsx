@@ -1,7 +1,10 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { useFormik } from 'formik'
+import * as Yup from 'yup'
 import { useAuth } from '../context/AuthContext'
 import styled from 'styled-components'
 import { useNavigate } from 'react-router'
+import { registerUser } from '../services/firestoreService'
 
 const SignupContainer = styled.div`
   text-align: center;
@@ -50,123 +53,119 @@ const SignupButton = styled.button`
   }
 `
 
-interface FeedbackMessageProps {
-  success: boolean
-}
-
-const FeedbackMessage = styled.div<FeedbackMessageProps>`
-  margin-top: 10px;
-  color: ${(props) => (props.success ? '#4caf50' : '#ff1744')};
+const ErrorTooltip = styled.div`
+  color: #ff1744;
+  font-size: 14px;
 `
 
+const validationSchema = Yup.object({
+  phoneNumber: Yup.string().required('Phone Number is required'),
+  dob: Yup.string().required('Date of Birth is required'),
+})
+
 const Registration = () => {
-  const { signIn } = useAuth()
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    phoneNumber: '',
-    dob: '',
-  })
-  const [loading, setLoading] = useState(false)
-  const [feedback, setFeedback] = useState({ message: '', success: false })
-
+  const { user: authUser, signIn, signOut } = useAuth()
   const navigate = useNavigate()
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }))
-  }
 
-  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const formik = useFormik({
+    initialValues: {
+      firstName: authUser?.name.split(' ')[0] || '',
+      lastName: authUser?.name.split(' ')[1] || '',
+      phoneNumber: '',
+      dob: '',
+    },
+    validationSchema,
+    onSubmit: async (values, { setSubmitting, resetForm }) => {
+      try {
+        setSubmitting(true)
 
-    // Add your form validation logic here
+        const userData = {
+          uid: authUser?.id ?? '',
+          email: `${values.firstName.toLowerCase()}@example.com`,
+          id: authUser?.id ?? '',
+          name: `${values.firstName} ${values.lastName}`,
+          phoneNumber: values.phoneNumber,
+          dob: values.dob,
+        }
 
-    try {
-      setLoading(true)
+        signIn(userData)
 
-      // Simulating an asynchronous signup process
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+        await registerUser({
+          uid: userData.uid,
+          firstName: values.firstName,
+          lastName: values.lastName,
+          phoneNumber: values.phoneNumber,
+          dob: values.dob,
+        })
 
-      const user = {
-        uid: 'mockedUserId', // You might want to generate a unique ID for the user
-        email: `${formData.firstName.toLowerCase()}@example.com`, // Mocked email based on the first name
-        id: 'mockedUserId', // Provide a default value for id
-        name: `${formData.firstName} ${formData.lastName}`, // Concatenate first and last names
+        resetForm()
+        navigate('/dashboard')
+      } catch (error) {
+        console.error('Error during signup:', error)
+      } finally {
+        setSubmitting(false)
       }
-
-      // Additional steps if needed after successful signup
-      signIn(user)
-
-      setFeedback({ message: 'Signup successful!', success: true })
-
-      // Reset form fields
-      setFormData({
-        firstName: '',
-        lastName: '',
-        phoneNumber: '',
-        dob: '',
-      })
-
-      navigate('/dashboard')
-    } catch (error) {
-      console.error('Error during signup:', error)
-      setFeedback({
-        message: 'Error during signup. Please try again.',
-        success: false,
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
+    },
+  })
   return (
     <SignupContainer>
       <h2>Create an Account</h2>
-      <SignupForm onSubmit={handleSignup}>
+      <SignupForm onSubmit={formik.handleSubmit}>
         <FormInput
           type="text"
           name="firstName"
           placeholder="First Name"
-          value={formData.firstName}
-          onChange={handleInputChange}
-          required
+          value={formik.values.firstName}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          disabled
         />
+        {formik.touched.firstName && formik.errors.firstName && (
+          <ErrorTooltip>{formik.errors.firstName}</ErrorTooltip>
+        )}
+
         <FormInput
           type="text"
           name="lastName"
           placeholder="Last Name"
-          value={formData.lastName}
-          onChange={handleInputChange}
-          required
+          value={formik.values.lastName}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          disabled
         />
+        {formik.touched.lastName && formik.errors.lastName && (
+          <ErrorTooltip>{formik.errors.lastName}</ErrorTooltip>
+        )}
+
         <FormInput
           type="tel"
           name="phoneNumber"
           placeholder="Phone Number"
-          value={formData.phoneNumber}
-          onChange={handleInputChange}
-          required
+          value={formik.values.phoneNumber}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
         />
+        {formik.touched.phoneNumber && formik.errors.phoneNumber && (
+          <ErrorTooltip>{formik.errors.phoneNumber}</ErrorTooltip>
+        )}
+
         <FormInput
           type="date"
           name="dob"
           placeholder="Date of Birth"
-          value={formData.dob}
-          onChange={handleInputChange}
-          required
+          value={formik.values.dob}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
         />
-        <SignupButton type="submit" disabled={loading}>
-          {loading ? 'Signing Up...' : 'Sign Up'}
+        {formik.touched.dob && formik.errors.dob && (
+          <ErrorTooltip>{formik.errors.dob}</ErrorTooltip>
+        )}
+
+        <SignupButton type="submit" disabled={formik.isSubmitting}>
+          {formik.isSubmitting ? 'Signing Up...' : 'Sign Up'}
         </SignupButton>
       </SignupForm>
-      {feedback.message && (
-        <FeedbackMessage success={feedback.success}>
-          {feedback.message}
-        </FeedbackMessage>
-      )}
+      {formik.isSubmitting && <div>Signing up...</div>}
     </SignupContainer>
   )
 }
