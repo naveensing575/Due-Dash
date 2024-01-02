@@ -29,6 +29,7 @@ const registerUser = async (userData: UserData): Promise<void> => {
       lastName: userData.lastName,
       phoneNumber: userData.phoneNumber,
       dob: userData.dob,
+      uid: userData.uid,
     })
     console.log('User data successfully added to Firestore.')
   } catch (error) {
@@ -58,4 +59,23 @@ const queryUsers = async (
   }
 }
 
-export { registerUser, queryUsers }
+const doesUserExist = async (
+  field: string,
+  value: string
+): Promise<boolean> => {
+  try {
+    console.log(field , 'field')
+    console.log(value , 'value')
+    const q = query(collection(db, 'users'), where(field, '==', value));
+    const querySnapshot = await getDocs(q);
+
+    console.log('Query Snapshot:', querySnapshot);
+
+    return !querySnapshot.empty;
+  } catch (error) {
+    console.error('Error checking user existence in Firestore:', error);
+    throw error;
+  }
+};
+
+export { registerUser, queryUsers, doesUserExist };

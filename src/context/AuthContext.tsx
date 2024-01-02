@@ -3,10 +3,10 @@
 import React, { createContext, useContext, useState } from 'react'
 
 export interface User {
-  id: string
+  uid: string
   email: string
   fullName?: string
-  pictureUrl?: string
+  profilePictureUrl?: string
 }
 
 interface AuthContextType {
@@ -19,7 +19,7 @@ interface AuthContextType {
     fullName: string
     phoneNumber: string
     dob: string
-    pictureUrl?: string
+    profilePictureUrl?: string
   }) => void
   signOut: () => void
 }
@@ -41,13 +41,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     fullName: string
     phoneNumber: string
     dob: string
-    pictureUrl?: string // Include the pictureUrl property in the signIn method
+    profilePictureUrl?: string // Include the pictureUrl property in the signIn method
   }) => {
     setUser({
-      id: userData.uid,
+      uid: userData.uid,
       email: userData.email,
       fullName: userData.fullName,
-      pictureUrl: userData.pictureUrl, // Assign the pictureUrl if provided
+      profilePictureUrl: userData.profilePictureUrl, // Assign the pictureUrl if provided
     })
     setUid(userData.uid)
 

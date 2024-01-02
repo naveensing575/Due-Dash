@@ -86,9 +86,9 @@ const Registration = () => {
         setSubmitting(true)
 
         const userData = {
-          uid: user?.id ?? '',
+          uid: user?.uid ?? '',
           email: `${values.firstName.toLowerCase()}@example.com`,
-          id: user?.id ?? '',
+          id: user?.uid ?? '',
           name: `${values.firstName} ${values.lastName}`,
           phoneNumber: values.phoneNumber,
           dob: values.dob,

@@ -54,7 +54,7 @@ const ProfileDropdown: React.FC = () => {
   return (
     <Container>
       <ProfileImage
-        src={user?.pictureUrl || ''}
+        src={user?.profilePictureUrl || ''}
         alt="user image"
         onClick={toggleDropdown}
       />
