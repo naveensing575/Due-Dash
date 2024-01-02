@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { useAuth } from '../context/AuthContext'
@@ -64,13 +64,21 @@ const validationSchema = Yup.object({
 })
 
 const Registration = () => {
-  const { user: authUser, signIn, signOut } = useAuth()
+  const { signIn, signOut, user } = useAuth()
   const navigate = useNavigate()
+
+  console.log(user, 'laskfjaskldjaskljdklasj')
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login')
+    }
+  }, [user])
 
   const formik = useFormik({
     initialValues: {
-      firstName: authUser?.name.split(' ')[0] || '',
-      lastName: authUser?.name.split(' ')[1] || '',
+      firstName: user?.fullName?.split(' ')[0] || '',
+      lastName: user?.fullName?.split(' ')[1] || '',
       phoneNumber: '',
       dob: '',
     },
@@ -80,15 +88,13 @@ const Registration = () => {
         setSubmitting(true)
 
         const userData = {
-          uid: authUser?.id ?? '',
+          uid: user?.id ?? '',
           email: `${values.firstName.toLowerCase()}@example.com`,
-          id: authUser?.id ?? '',
+          id: user?.id ?? '',
           name: `${values.firstName} ${values.lastName}`,
           phoneNumber: values.phoneNumber,
           dob: values.dob,
         }
-
-        signIn(userData)
 
         await registerUser({
           uid: userData.uid,

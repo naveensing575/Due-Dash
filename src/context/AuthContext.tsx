@@ -12,6 +12,7 @@ interface AuthContextType {
   uid: string | null
   signIn: (userData: {
     id: string
+    fullName: string
     uid: string
     email: string
     name: string
@@ -36,14 +37,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     uid: string
     email: string
     name: string
+    fullName: string
     phoneNumber: string
     dob: string
   }) => {
     setUser({
-      id: userData.id,
+      id: userData.uid,
       name: userData.name,
       email: userData.email,
-      fullName: userData.name, // Assuming fullName is derived from the name property
+      fullName: userData.fullName, // Assuming fullName is derived from the name property
     })
     setUid(userData.uid)
 
@@ -64,6 +66,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signOut,
   }
 
+
+  console.log(user , " user ")
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   )

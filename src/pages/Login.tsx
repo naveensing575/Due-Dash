@@ -3,7 +3,7 @@ import styled, { keyframes } from 'styled-components'
 import GoogleLoginButton from '../components/Login/GoogleLoginButton'
 import { useNavigate } from 'react-router'
 import { queryUsers } from '../services/firestoreService'
-
+import { useAuth } from '../context/AuthContext'
 const LoginContainer = styled.div`
   text-align: center;
   position: relative;
@@ -43,7 +43,7 @@ const TextContainer = styled.div`
 
 const Login = () => {
   const navigate = useNavigate()
-
+  const { signIn } = useAuth()
   const handleLoginSuccess = async (userData: any) => {
     console.log('Login successful:', userData)
     try {
@@ -57,6 +57,7 @@ const Login = () => {
         // If user is not found, navigate to the registration page
         navigate('/register')
       }
+      signIn(userData)
     } catch (error) {
       console.error('Error during login:', error)
       // Handle the error as needed
