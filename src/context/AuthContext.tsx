@@ -41,13 +41,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     fullName: string
     phoneNumber: string
     dob: string
-    profilePictureUrl?: string // Include the pictureUrl property in the signIn method
+    profilePictureUrl?: string
   }) => {
     setUser({
       uid: userData.uid,
       email: userData.email,
       fullName: userData.fullName,
-      profilePictureUrl: userData.profilePictureUrl, // Assign the pictureUrl if provided
+      profilePictureUrl: userData.profilePictureUrl,
     })
     setUid(userData.uid)
 
@@ -68,7 +68,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signOut,
   }
 
-  console.log(user, ' user ')
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   )

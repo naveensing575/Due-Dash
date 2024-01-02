@@ -33,6 +33,14 @@ const FormInput = styled.input`
   }
 `
 
+const FirstNameInput = styled(FormInput)`
+  color: white;
+`
+
+const LastNameInput = styled(FormInput)`
+  color: white;
+`
+
 const SignupButton = styled.button`
   background-color: #4285f4;
   color: #fff;
@@ -56,15 +64,23 @@ const SignupButton = styled.button`
 const ErrorTooltip = styled.div`
   color: #ff1744;
   font-size: 14px;
+  translate: 0 -10px;
 `
 
 const validationSchema = Yup.object({
-  phoneNumber: Yup.string().required('Phone Number is required'),
-  dob: Yup.string().required('Date of Birth is required'),
+  phoneNumber: Yup.string()
+    .required('Phone Number is required')
+    .matches(/^[0-9]{10}$/, 'Invalid Phone Number'),
+  dob: Yup.string()
+    .required('Date of Birth is required')
+    .matches(
+      /^(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/,
+      'Invalid Date of Birth (YYYY-MM-DD)',
+    ),
 })
 
 const Registration = () => {
-  const { signIn, signOut, user } = useAuth()
+  const { user } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -115,7 +131,7 @@ const Registration = () => {
     <SignupContainer>
       <h2>Create an Account</h2>
       <SignupForm onSubmit={formik.handleSubmit}>
-        <FormInput
+        <FirstNameInput
           type="text"
           name="firstName"
           placeholder="First Name"
@@ -128,7 +144,7 @@ const Registration = () => {
           <ErrorTooltip>{formik.errors.firstName}</ErrorTooltip>
         )}
 
-        <FormInput
+        <LastNameInput
           type="text"
           name="lastName"
           placeholder="Last Name"
