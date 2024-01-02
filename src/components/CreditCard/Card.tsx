@@ -257,7 +257,7 @@ const Card: React.FC<CardProps> = ({
           )}
         </div>
         <div className="back">
-          <div className="user-name">{}</div>
+          <div className="user-name">{user?.fullName}</div>
           <div className="strip"></div>
           <div className="ccv">
             <label>CCV</label>
