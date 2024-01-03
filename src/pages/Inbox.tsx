@@ -1,24 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { useAuth } from '../context/AuthContext'
+import { useAuth, User } from '../context/AuthContext'
 import { decodeBase64 } from '../utils/decode'
 import Card from '../components/CreditCard/Card'
 import { get } from '../services/api'
-
-interface UserProfile {
-  picture: string
-  name: string
-  email: string
-}
 
 interface Email {
   id: string
   subject: string
   body: string
-}
-
-interface InboxProps {
-  user: { access_token: string } | null
 }
 
 interface CardInfo {
@@ -58,15 +48,15 @@ const StyledBody = styled.p`
   color: #444;
 `
 
-const Inbox: React.FC<InboxProps> = ({ user }) => {
-  const [inboxEmails, setInboxEmails] = useState<Email[]>([])
-  const { user: userProfile } = useAuth()
+const Inbox: React.FC = () => {
+  const [inboxEmails, setInboxEmails] = useState<any[]>([])
+  const { user } = useAuth()
 
   useEffect(() => {
-    if (userProfile) {
+    if (user) {
       fetchInboxEmails()
     }
-  }, [userProfile])
+  }, [user])
 
   const fetchInboxEmails = async () => {
     try {
@@ -74,19 +64,17 @@ const Inbox: React.FC<InboxProps> = ({ user }) => {
         `users/me/messages?labelIds=INBOX`,
         {
           headers: {
-            Authorization: `Bearer ${user?.access_token}`,
+            Authorization: `Bearer ${user?.accessToken}`,
             Accept: 'application/json',
           },
         },
       )
 
-      const emails: Email[] = response.messages.map((message: any) => {
-        return {
-          id: message.id,
-          subject: '',
-          body: '',
-        }
-      })
+      const emails: any[] = response.messages.map((message: any) => ({
+        id: message.id,
+        subject: '',
+        body: '',
+      }))
 
       const emailsWithDetails = await Promise.all(
         emails.map(async (email) => {
@@ -94,7 +82,7 @@ const Inbox: React.FC<InboxProps> = ({ user }) => {
             payload: { headers: any[]; parts: { body: { data: string } }[] }
           } = await get(`users/me/messages/${email.id}`, {
             headers: {
-              Authorization: `Bearer ${user?.access_token}`,
+              Authorization: `Bearer ${user?.accessToken}`,
               Accept: 'application/json',
             },
           })
@@ -189,16 +177,14 @@ const Inbox: React.FC<InboxProps> = ({ user }) => {
           <StyledEmailList>
             {inboxEmails.map((email) => {
               const cardInfo = extractCardInfo(email.body)
-              if (cardInfo) {
-                return (
+              return (
+                cardInfo && (
                   <StyledEmailItem key={email.id}>
                     <StyledSubject>{cardInfo.cardName}</StyledSubject>
                     <Card {...cardInfo} />
                   </StyledEmailItem>
                 )
-              }
-
-              return null
+              )
             })}
           </StyledEmailList>
         </div>

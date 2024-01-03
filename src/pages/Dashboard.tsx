@@ -2,6 +2,7 @@ import React from 'react'
 import LogoutButton from '../components/Logout/Logout'
 import styled from 'styled-components'
 import Card from '../components/CreditCard/Card'
+import Inbox from './Inbox'
 const StyledDashboard = styled.div`
   display: flex;
   flex-direction: column;
@@ -14,7 +15,7 @@ const Dashboard = () => {
   return (
     <StyledDashboard>
       <h1>Welcome to Due-Dash!</h1>
-      <Card cardName={''} cardNumber={''} bankName={''} amountDue={0} dueDate={''} billingCycle={''} billingDate={''} totalAmountDue={''} />
+      <Inbox />
     </StyledDashboard>
   )
 }

@@ -61,21 +61,19 @@ const queryUsers = async (
 
 const doesUserExist = async (
   field: string,
-  value: string
+  value: string,
 ): Promise<boolean> => {
   try {
-    console.log(field , 'field')
-    console.log(value , 'value')
-    const q = query(collection(db, 'users'), where(field, '==', value));
-    const querySnapshot = await getDocs(q);
+    const q = query(collection(db, 'users'), where(field, '==', value))
+    const querySnapshot = await getDocs(q)
 
-    console.log('Query Snapshot:', querySnapshot);
+    console.log('Query Snapshot:', querySnapshot)
 
-    return !querySnapshot.empty;
+    return !querySnapshot.empty
   } catch (error) {
-    console.error('Error checking user existence in Firestore:', error);
-    throw error;
+    console.error('Error checking user existence in Firestore:', error)
+    throw error
   }
-};
+}
 
-export { registerUser, queryUsers, doesUserExist };
+export { registerUser, queryUsers, doesUserExist }

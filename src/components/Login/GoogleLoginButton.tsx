@@ -50,12 +50,16 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
       // Extract profile picture URL from the photoURL property
       const profilePictureUrl = user.photoURL || ''
 
+      // Get the ID token using getIdToken method
+      const idToken = await user.getIdToken()
+      console.log('ID Token:', idToken)
       // Pass the entire user object with additional info to onSuccess
       onSuccess({
         uid: user.uid,
         email: user.email,
         fullName,
         profilePictureUrl, // Include profile picture URL in the data
+        accessToken: idToken || '', // Extract ID token
       })
     } catch (error) {
       console.error('Error during Google login:', error)

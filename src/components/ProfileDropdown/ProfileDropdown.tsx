@@ -11,13 +11,15 @@ const DropdownContainer = styled.div`
   position: absolute;
   top: 60px;
   right: 0;
-  background: light-blue;
-  backdrop-filter: blur(10px);
+  background: black;
   border: 1px solid silver;
   z-index: 1;
   border-radius: 4px;
   overflow: hidden;
   color: white;
+  border-radius: 20px;
+  font-family: 'Poppins';
+  font-size: 14px;
 `
 
 const ProfileImage = styled.img`

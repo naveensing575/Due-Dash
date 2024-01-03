@@ -1,5 +1,3 @@
-// AuthContext.tsx
-
 import React, { createContext, useContext, useState } from 'react'
 
 export interface User {
@@ -7,6 +5,7 @@ export interface User {
   email: string
   fullName?: string
   profilePictureUrl?: string
+  accessToken?: string // Include access token in the User interface
 }
 
 interface AuthContextType {
@@ -20,6 +19,7 @@ interface AuthContextType {
     phoneNumber: string
     dob: string
     profilePictureUrl?: string
+    access?: any // Include credential in the signIn function
   }) => void
   signOut: () => void
 }
@@ -42,12 +42,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     phoneNumber: string
     dob: string
     profilePictureUrl?: string
+    accessToken?: any
   }) => {
     setUser({
       uid: userData.uid,
       email: userData.email,
       fullName: userData.fullName,
       profilePictureUrl: userData.profilePictureUrl,
+      accessToken: userData.accessToken || '', // Extract access token
     })
     setUid(userData.uid)
 
