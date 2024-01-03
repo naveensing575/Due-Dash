@@ -29,8 +29,8 @@ const waveAnimation = keyframes`
 `
 
 const PlayPauseIcon = styled.div<{ isPlaying: boolean }>`
-  width: 20px; /* Adjust the width as needed */
-  height: 20px; /* Adjust the height as needed */
+  width: 20px;
+  height: 20px;
   background: url(${icon});
   background-size: 200% 100%;
   display: block;
@@ -42,7 +42,7 @@ const PlayPauseIcon = styled.div<{ isPlaying: boolean }>`
 `
 
 const BackgroundAudio: React.FC = () => {
-  const [isPlaying, setIsPlaying] = useState(true)
+  const [isPlaying, setIsPlaying] = useState(false)
   const [audioElement, setAudioElement] = useState(new Audio(AudioTrack))
 
   useEffect(() => {
@@ -55,26 +55,10 @@ const BackgroundAudio: React.FC = () => {
       setIsPlaying(!isPlaying)
     }
 
-    const initializeAudio = () => {
-      audioElement.addEventListener('ended', () => {
-        audioElement.currentTime = 0 // Reset to the beginning when it ends
-        if (isPlaying) {
-          audioElement.play()
-        }
-      })
-
-      audioElement.setAttribute('autoPlay', 'true')
-      audioElement.setAttribute('loop', 'true')
-      document.body.appendChild(audioElement)
-    }
-
-    initializeAudio()
-
     const button = document.getElementById('play-pause-button')
     button?.addEventListener('click', playPauseHandler)
 
     return () => {
-      document.body.removeChild(audioElement)
       button?.removeEventListener('click', playPauseHandler)
     }
   }, [isPlaying, audioElement])
